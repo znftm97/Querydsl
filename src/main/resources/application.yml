@@ -12,7 +12,8 @@ spring:
       hibernate:
         #show_sql: true
         format_sql: true
+        #use_sql_comments: true #Querydsl이 jpql로 변환된거 보기
 
 logging.level:
   org.hibernate.SQL: debug
-# org.hibernate.type: trace
+#org.hibernate.type: trace
