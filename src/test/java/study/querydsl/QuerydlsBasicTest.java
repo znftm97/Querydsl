@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static study.querydsl.entity.QMember.*;
 
@@ -109,6 +110,70 @@ public class QuerydlsBasicTest {
         long total = queryFactory
                 .selectFrom(member)
                 .fetchCount();
+    }
+
+    /**
+     * 1. 회원 나이 내림차순
+     * 2. 회원 이름 올림차순
+     * 2에서 회원 이름이 없으면 마지막에 출력
+     *
+     */
+    @Test
+    public void sort() throws Exception {
+        //given
+        em.persist(new Member(null, 100));
+        em.persist(new Member("member5", 100));
+        em.persist(new Member("member6", 100));
+
+        //when
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(100))
+                .orderBy(member.age.desc(), member.username.asc().nullsLast())
+                .fetch();
+        //then
+        Member member5 = result.get(0);
+        Member member6 = result.get(1);
+        Member memberNull = result.get(2);
+
+        assertThat(member5.getUsername()).isEqualTo("member5");
+        assertThat(member6.getUsername()).isEqualTo("member6");
+        assertThat(memberNull.getUsername()).isNull();
+    }
+
+    @Test
+    public void pagin1() throws Exception {
+        //given
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)
+                .limit(2)
+                .fetch();
+        //when
+
+        //then
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void pagin2() throws Exception {
+        //given
+
+        QueryResults<Member> results = queryFactory
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)
+                .limit(2)
+                .fetchResults();
+        //when
+
+        //then
+        assertThat(results.getTotal()).isEqualTo(4);
+        assertThat(results.getLimit()).isEqualTo(2);
+        assertThat(results.getOffset()).isEqualTo(1);
+        assertThat(results.getResults().size()).isEqualTo(2);
     }
 
 
