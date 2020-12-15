@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import study.querydsl.dto.MemberSearchCondition;
 import study.querydsl.dto.MemberTeamDto;
 import study.querydsl.dto.QMemberTeamDto;
-import study.querydsl.entity.Member;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -69,6 +68,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
 
         List<MemberTeamDto> content = results.getResults();
         long total = results.getTotal();
+
 
         return new PageImpl<>(content, pageable, total);
 
